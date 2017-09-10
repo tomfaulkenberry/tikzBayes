@@ -1,0 +1,58 @@
+\documentclass[11pt]{article} 
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+\usetikzlibrary{arrows}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\begin{document}
+\begin{figure}
+  \tikz{
+
+     % nodes
+     \node[obs] (y) {$y_{ij}$};%
+     \node[latent, above=of y, xshift=-3cm] (alpha) {$\alpha_{i}$}; %
+     \node[latent, above=of y, xshift=0cm] (theta) {$\theta_{i}$}; %
+     \node[latent, above=of y, xshift=3cm] (gamma) {$\gamma_{i}$}; %
+
+     \node[latent, above=of alpha, xshift=-0.75cm] (a) {$a$}; %
+     \node[latent, above=of alpha, xshift=0.75cm] (sa) {$s_a$}; %
+
+     \node[latent, above=of theta, xshift=-0.75cm] (h) {$h$}; %
+     \node[latent, above=of theta, xshift=0.75cm] (sh) {$s_h$}; %
+
+     \node[latent, above=of gamma, xshift=-0.75cm] (g) {$g$}; %
+     \node[latent, above=of gamma, xshift=0.75cm] (sg) {$s_g$}; %
+     
+     % edges
+     \edge {alpha,theta,gamma} {y}
+     \edge {a,sa} {alpha}
+     \edge {h,sh} {theta}
+     \edge {g,sg} {gamma}
+     
+     % plates
+
+     \plate[inner sep=10pt] {plate1} {(y)} {trial $j$}; %
+     \plate[inner sep=10pt] {plate2} {(plate1)(y)(alpha)(theta)(gamma)} {subject $i$}; %
+
+     % text
+     \node[text width=6cm, anchor=west, right] at (5,1)
+     {
+       \begin{align*}
+         a & \sim \text{Uniform}(0.67, 2.35)\\
+         s_a & \sim \text{Uniform}(0, 0.485)\\
+         h & \sim \text{Uniform}(0, 0.82)\\
+         s_h & \sim \text{Uniform}(0, 0.237)\\
+         g & \sim \text{Uniform}(0.85, 7.43)\\
+         s_g & \sim \text{Uniform}(0, 1.899)\\[3mm] 
+        \alpha_i & \sim \mathcal{N}(a, s_a^2)\\
+         \theta_i & \sim \mathcal{N}(h, s_h^2)\\
+         \gamma_i & \sim \mathcal{N}(g, s_g^2)\\[3mm]
+         y_{ij} & \sim \text{ShiftedWald}(\alpha_i, \theta_i, \gamma_i)
+       \end{align*}
+     };
+   }
+\end{figure}
+\end{document}
